@@ -254,7 +254,13 @@ func RequestInfoByID(ctx *fiber.Ctx) error {
 			JSON(userinfo)
 	}
 
-	return ctx.SendString("UNAUTHORIZED")
+	return ctx.SendString("UNAUTHORIZED  ....    bitch")
+}
+
+func XUpdateuserdata(c *fiber.Ctx) error {
+	return c.
+		Status(http.StatusAccepted).
+		JSON(fiber.Map{"mes": "nice"})
 }
 
 func CheckExpiredToken(ctx *fiber.Ctx) error {

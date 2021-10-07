@@ -33,7 +33,10 @@ func main() {
 	cookie.Value = "doe"
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 10 * 1024 * 1024,
+	})
+
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		AllowMethods:     "POST, GET, OPTIONS, PUT, DELETE",
