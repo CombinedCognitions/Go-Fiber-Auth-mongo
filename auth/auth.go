@@ -79,12 +79,12 @@ func SignUp(ctx *fiber.Ctx) error {
 			return err
 		}
 
-		fmt.Println(token)
-		fmt.Println(exp)
+		// fmt.Println(token)
+		// fmt.Println(exp)
 
 		return ctx.
 			Status(http.StatusCreated).
-			JSON(fiber.Map{"token": token, "exp": exp, "user": models.User{Email: newuser.Email, ID: newuser.ID, CreatedAt: newuser.CreatedAt}})
+			JSON(fiber.Map{"token": fmt.Sprintf("Bearer %s", token), "exp": exp, "user": models.User{Email: newuser.Email, ID: newuser.ID, CreatedAt: newuser.CreatedAt}})
 	}
 
 	if exist.Email != "" {
@@ -139,15 +139,6 @@ func Login(ctx *fiber.Ctx) error {
 				JSON(utix.NewJError(err))
 
 		}
-		cookie := new(fiber.Cookie)
-		cookie.Name = "jwt"
-		cookie.SameSite = "None"
-		cookie.Value = fmt.Sprintf("Bearer %s", token)
-		cookie.HTTPOnly = true
-
-		cookie.Expires = time.Now().Add(24 * time.Hour)
-
-		ctx.Cookie(cookie)
 
 		return ctx.
 			Status(http.StatusOK).
@@ -192,10 +183,11 @@ func GetUser(ctx *fiber.Ctx) error {
 	}
 
 	if input.ID.Hex() == claims["Id"] && input.ID.Hex() == claims["Issuer"] {
-		fmt.Println("both claims match")
+		fmt.Println("both claims match , USER AUTHORIZED")
+		// fmt.Println(datafromDB)
 		return ctx.
 			Status(http.StatusOK).
-			JSON(fiber.Map{"data": datafromDB, "message": "damm you unlcoked private routes"})
+			JSON(fiber.Map{"email": datafromDB.Email, "id": datafromDB.ID, "password": "nope im not sending the password hear Xd PRIVATE", "createdAt": datafromDB.CreatedAt})
 	}
 	fmt.Println("sad that dint work lol")
 	return ctx.

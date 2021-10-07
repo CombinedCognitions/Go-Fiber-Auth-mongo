@@ -32,7 +32,8 @@ func Install(app *fiber.App) {
 	//private.Get("/", auth.GetUser)
 
 	private.Get("/:id", auth.RequestInfoByID)
-	private.Post("/x", auth.GetUser)
-	private.Post("/checkjwt", auth.CheckJwt)
+	private.Post("/getUser", auth.GetUser)
+	private.Post("/addinfo", auth.GetUser)
+	//private.Post("/checkjwt", auth.CheckJwt)
 
 }
