@@ -142,7 +142,7 @@ func Login(ctx *fiber.Ctx) error {
 
 		return ctx.
 			Status(http.StatusOK).
-			JSON(fiber.Map{"token": fmt.Sprintf("Bearer %s", token), "exp": exp, "user": models.User{Email: userinfo.Email, ID: userinfo.ID, CreatedAt: userinfo.CreatedAt}})
+			JSON(fiber.Map{"token": fmt.Sprintf("Bearer %s", token), "exp": exp, "user": models.User{Email: userinfo.Email, ID: userinfo.ID, CreatedAt: userinfo.CreatedAt, Username: userinfo.Username}})
 
 	}
 	if err != nil {
@@ -163,7 +163,7 @@ func GetUser(ctx *fiber.Ctx) error {
 
 	user := ctx.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	fmt.Println(user, claims)
+	//fmt.Println(user, claims)
 
 	err := ctx.BodyParser(&input)
 	if err != nil {
@@ -172,9 +172,11 @@ func GetUser(ctx *fiber.Ctx) error {
 			JSON(utix.NewJError(err))
 	}
 
-	datafromDB, err := controllers.GetByEmail(input.Email)
+	//datafromDB, err := controllers.GetByEmail(input.Email)
+	userdata, err := controllers.GetUserDataByKey("email", input.Email)
 
-	fmt.Println(datafromDB)
+	//fmt.Println(datafromDB)
+	//fmt.Println(userdata)
 	if err != nil {
 		return ctx.
 			Status(http.StatusUnprocessableEntity).
@@ -184,10 +186,10 @@ func GetUser(ctx *fiber.Ctx) error {
 
 	if input.ID.Hex() == claims["Id"] && input.ID.Hex() == claims["Issuer"] {
 		fmt.Println("both claims match , USER AUTHORIZED")
-		// fmt.Println(datafromDB)
+
 		return ctx.
 			Status(http.StatusOK).
-			JSON(fiber.Map{"email": datafromDB.Email, "id": datafromDB.ID, "password": "nope im not sending the password hear Xd PRIVATE", "createdAt": datafromDB.CreatedAt})
+			JSON(fiber.Map{"email": userdata.Email, "id": userdata.ID, "createdAt": userdata.CreatedAt, "username": userdata.Username, "age": userdata.Age, "bio": userdata.Bio, "phone": userdata.Phone, "gender": userdata.Gender, "profilepiclink": userdata.Profilepicturelink})
 	}
 	fmt.Println("sad that dint work lol")
 	return ctx.
@@ -228,7 +230,6 @@ func CheckJwt(ctx *fiber.Ctx) error {
 	return ctx.
 		Status(http.StatusUnprocessableEntity).
 		JSON(utix.NewJError(utix.ErrLogout))
-
 }
 
 func RequestInfoByID(ctx *fiber.Ctx) error {
@@ -238,7 +239,7 @@ func RequestInfoByID(ctx *fiber.Ctx) error {
 
 	user := ctx.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	fmt.Println(user)
+	//fmt.Println(user)
 
 	userinfo, err := controllers.GetByID("_id", id)
 	if err != nil {
@@ -248,7 +249,7 @@ func RequestInfoByID(ctx *fiber.Ctx) error {
 
 	}
 	if userinfo.ID.Hex() == claims["Id"] && userinfo.ID.Hex() == claims["Issuer"] {
-		fmt.Println("both claims match", userinfo.ID, claims["Id"])
+		fmt.Println("both claims match")
 		return ctx.
 			Status(http.StatusOK).
 			JSON(userinfo)

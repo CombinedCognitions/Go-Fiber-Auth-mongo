@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"go-fiber-auth/controllers"
-	"go-fiber-auth/models"
 	"go-fiber-auth/routes"
-	"go-fiber-auth/utix"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -28,16 +24,12 @@ func init() {
 
 func main() {
 
-	cookie := new(fiber.Cookie)
-	cookie.Name = "john"
-	cookie.Value = "doe"
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-
 	app := fiber.New(fiber.Config{
 		BodyLimit: 10 * 1024 * 1024,
 	})
 
 	app.Use(logger.New())
+	app.Static("/storage", "./uploads")
 	app.Use(cors.New(cors.Config{
 		AllowMethods:     "POST, GET, OPTIONS, PUT, DELETE",
 		AllowOrigins:     "*",
@@ -50,19 +42,8 @@ func main() {
 		return ctx.Status(http.StatusOK).JSON(fiber.Map{"message": "helll world"})
 	})
 
-	app.Get("/cook", func(c *fiber.Ctx) error {
-
-		cuck := c.Cookies("jwt")
-		str := fmt.Sprintf(" this is the ballue %s", string(cuck))
-		fmt.Print(str)
-		fmt.Print("   <== this is cukc")
-
-		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "helll world"})
-	})
 	routes.Install(app)
 	defer controllers.Close()
-
-	var newUser models.User
 
 	// controllers.Save(&newUser)
 	// res, err := controllers.GetByEmail("akashs2000@gmail.com")
@@ -89,7 +70,9 @@ func main() {
 	// }
 	// fmt.Println(res.DeletedCount)
 
-	// controllers.Update("email", "nigga@gmail.com", newUser)
+	//var newuser models.User
+
+	//controllers.Update("email", "headflake@gmail.com", "username", "funcissogoood")
 
 	// has, erer := security.EncryptPassword("sass")
 	// utix.CheckErorr(erer)
@@ -105,9 +88,9 @@ func main() {
 	// utix.CheckErorr(err)
 	// fmt.Println("_________ token")
 	// fmt.Println(token)
-	newUser, err := controllers.GetByKey("email", "akashd2000@gmail.com")
-	fmt.Println(newUser)
-	utix.CheckErorr(err)
+	// newUser, err := controllers.GetByKey("email", "akashd2000@gmail.com")
+	// fmt.Println(newUser)
+	// utix.CheckErorr(err)
 	log.Fatal(app.Listen(":8080"))
 
 }

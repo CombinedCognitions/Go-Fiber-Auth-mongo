@@ -51,6 +51,19 @@ func GetByKey(key string, value string) (models.User, error) {
 
 }
 
+func GetUserDataByKey(key string, value string) (models.User, error) {
+	var res models.User
+	filter := bson.D{{key, value}}
+
+	result := userCollection.FindOne(context.Background(), filter)
+	result.Decode(res)
+
+	err := userCollection.FindOne(context.Background(), filter).Decode(&res)
+	//fmt.Println(resultdoc.Userdata, "THIS IS RESultdoc BABY")
+	return res, err
+
+}
+
 func GetAll() []models.User {
 	cursor, err := userCollection.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -88,14 +101,71 @@ func Delete(id string) (*mongo.DeleteResult, error) {
 	return res, err
 }
 
-func Update(key string, value string, user models.User) {
+func Update(key string, value string, updatekey string, userdata string) error {
+	if key == "_id" {
+		_id, err1 := primitive.ObjectIDFromHex(value)
+		if err1 != nil {
+			utix.CheckErorr(err1)
+		}
+		filter := bson.D{{key, _id}}
+		update := bson.D{{"$set", bson.D{{updatekey, userdata}}}}
+		_, e := userCollection.UpdateOne(context.Background(), filter, update)
+		if e != nil {
+			return e
+		}
+		fmt.Println("update sucesss")
+		fmt.Println("fired from ID sub conditionals")
+
+		return nil
+
+	}
+
 	filter := bson.D{{key, value}}
 
-	update := bson.D{{"$set", bson.D{{"password", user.Password}}}}
+	update := bson.D{{"$set", bson.D{{updatekey, userdata}}}}
 
 	_, e := userCollection.UpdateOne(context.Background(), filter, update)
-	utix.CheckErorr(e)
+
+	if e != nil {
+		return e
+	}
 	fmt.Println("update sucesss")
+
+	return nil
+
+}
+
+func Updateint(key string, value string, updatekey string, userdata int64) error {
+	if key == "_id" {
+		_id, err1 := primitive.ObjectIDFromHex(value)
+		if err1 != nil {
+			utix.CheckErorr(err1)
+		}
+		filter := bson.D{{key, _id}}
+		update := bson.D{{"$set", bson.D{{updatekey, userdata}}}}
+		_, e := userCollection.UpdateOne(context.Background(), filter, update)
+		if e != nil {
+			return e
+		}
+		fmt.Println("update sucesss")
+		fmt.Println("fired from ID sub conditionals")
+
+		return nil
+
+	}
+
+	filter := bson.D{{key, value}}
+
+	update := bson.D{{"$set", bson.D{{updatekey, userdata}}}}
+
+	_, e := userCollection.UpdateOne(context.Background(), filter, update)
+
+	if e != nil {
+		return e
+	}
+	fmt.Println("update sucesss")
+
+	return nil
 
 }
 
