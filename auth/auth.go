@@ -142,7 +142,7 @@ func Login(ctx *fiber.Ctx) error {
 
 		return ctx.
 			Status(http.StatusOK).
-			JSON(fiber.Map{"token": fmt.Sprintf("Bearer %s", token), "exp": exp, "user": models.User{Email: userinfo.Email, ID: userinfo.ID, CreatedAt: userinfo.CreatedAt, Username: userinfo.Username}})
+			JSON(fiber.Map{"token": fmt.Sprintf("Bearer %s", token), "exp": exp, "user": models.User{Email: userinfo.Email, ID: userinfo.ID, CreatedAt: userinfo.CreatedAt, Username: userinfo.Username, Profilepicturelink: userinfo.Profilepicturelink}})
 
 	}
 	if err != nil {

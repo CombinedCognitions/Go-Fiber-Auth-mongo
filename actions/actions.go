@@ -133,9 +133,26 @@ func Uploadprofilepic(c *fiber.Ctx) error {
 				JSON(utix.NewJError(err))
 
 		}
-		profilepiclink := fmt.Sprintf("%suserprofilepicture.jpeg", id)
+
+		adduploadno := userinfo.Uploadsno
+		adduploadno++
+
+		profilepiclink := fmt.Sprintf("%s%s%duserprofilepicture.jpeg", id, "upno", adduploadno)
+
 		c.SaveFile(file, fmt.Sprintf("./uploads/%s", profilepiclink))
-		err = controllers.Update("_id", id, "profilepicturelink", profilepiclink)
+
+		if err != nil {
+			c.
+				Status(http.StatusUnprocessableEntity).
+				JSON(utix.NewJError(err))
+
+		}
+
+		//fmt.Println(adduploadno, "this is adduplaod")
+
+		controllers.Updateint("_id", id, "uploadsno", adduploadno)
+		controllers.Update("_id", id, "profilepicturelink", profilepiclink)
+
 		if err != nil {
 			c.
 				Status(http.StatusUnprocessableEntity).
@@ -143,7 +160,7 @@ func Uploadprofilepic(c *fiber.Ctx) error {
 
 		}
 		return c.Status(http.StatusAccepted).
-			JSON(fiber.Map{"message": "file upload success", "userdata": profilepiclink})
+			JSON(fiber.Map{"message": "file upload success", "userdata": userinfo, "profilepiclink": profilepiclink})
 	} else {
 
 		return c.

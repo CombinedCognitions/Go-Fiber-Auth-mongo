@@ -18,4 +18,5 @@ type User struct {
 	Phone              string             `json:"phone" bson:"phone,omitempty"`
 	Gender             string             `json:"gender" bson:"gender,omitempty"`
 	Profilepicturelink string             `json:"profilepicturelink" bson:"profilepicturelink,omitempty"`
+	Uploadsno          int64              `json:"uploadsno" bson:"uploadsno,omitempty"`
 }
